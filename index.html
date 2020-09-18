@@ -53,7 +53,60 @@
 	    $.getScript('./js/world-gl-map/d3_timer.js')
 	).done(function () {
 			
-        initCharts(opt);
+	    image('img/8.png').then(function(image) {
+	        var m = image.height,
+	            n = image.width,
+	            values = new Array(n * m),
+	            contours = d3.contours().size([n, m]).smooth(true),
+	            projection = d3.geoIdentity().scale(canvas.width / n),
+	            path = d3.geoPath(projection, context);
+	
+	        //   StackBlur.R(image, 5);
+	
+	        for (var j = 0, k = 0; j < m; ++j) {
+	            for (var i = 0; i < n; ++i, ++k) {
+	            values[k] = image.data[(k << 2)] / 255;
+	            }
+	        }
+	
+	        var opt = {
+	            image: canvas
+	        }
+	
+	        var results = [];
+	        function update(threshold, levels) {
+	            context.clearRect(0, 0, canvas.width, canvas.height);
+	            var thresholds = [];
+	            for (var i = 0; i < levels; i++) {
+	                thresholds.push((threshold + 1 / levels * i) % 1);
+	            }
+	            results = contours.thresholds(thresholds)(values);
+	            redraw();
+	        }
+	
+	        function redraw() {
+	            results.forEach(function (d, idx) {
+	                context.beginPath();
+	                path(d);
+	                context.globalAlpha = 1;
+	                context.stroke();
+	                if (idx > config.levels / 5 * 3) {
+	                    context.globalAlpha = 0.01;
+	                    context.fill();
+	                }
+	            });
+	            opt.onupdate();
+	        }
+	        d3.timer(function(t) {
+	            var threshold = (t % 10000) / 10000;
+	            update(threshold, 1);
+	        });
+	
+	        initCharts(opt);
+	
+	        update(config.threshold, config.levels);
+	
+	    });		
 	
 	    function image(url) {
 	        return new Promise(function(resolve) {
@@ -259,7 +312,6 @@
 			            }
 			        },
 			        itemStyle: {
-                        show:false,
 			            normal: {
 			                color: 'rgb(29,183,255)'
 			            }
