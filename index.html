@@ -53,60 +53,7 @@
 	    $.getScript('./js/world-gl-map/d3_timer.js')
 	).done(function () {
 			
-	    image('img/8.png').then(function(image) {
-	        var m = image.height,
-	            n = image.width,
-	            values = new Array(n * m),
-	            contours = d3.contours().size([n, m]).smooth(true),
-	            projection = d3.geoIdentity().scale(canvas.width / n),
-	            path = d3.geoPath(projection, context);
-	
-	        //   StackBlur.R(image, 5);
-	
-	        for (var j = 0, k = 0; j < m; ++j) {
-	            for (var i = 0; i < n; ++i, ++k) {
-	            values[k] = image.data[(k << 2)] / 255;
-	            }
-	        }
-	
-	        var opt = {
-	            image: canvas
-	        }
-	
-	        var results = [];
-	        function update(threshold, levels) {
-	            context.clearRect(0, 0, canvas.width, canvas.height);
-	            var thresholds = [];
-	            for (var i = 0; i < levels; i++) {
-	                thresholds.push((threshold + 1 / levels * i) % 1);
-	            }
-	            results = contours.thresholds(thresholds)(values);
-	            redraw();
-	        }
-	
-	        function redraw() {
-	            results.forEach(function (d, idx) {
-	                context.beginPath();
-	                path(d);
-	                context.globalAlpha = 1;
-	                context.stroke();
-	                if (idx > config.levels / 5 * 3) {
-	                    context.globalAlpha = 0.01;
-	                    context.fill();
-	                }
-	            });
-	            opt.onupdate();
-	        }
-	        d3.timer(function(t) {
-	            var threshold = (t % 10000) / 10000;
-	            update(threshold, 1);
-	        });
-	
-	        initCharts(opt);
-	
-	        update(config.threshold, config.levels);
-	
-	    });		
+        initCharts(opt);
 	
 	    function image(url) {
 	        return new Promise(function(resolve) {
@@ -222,23 +169,8 @@
 			    tooltip: {
 			        show: true
 			    },
-	//		    visualMap: [{
-	//		        // show: false,
-	//		        type: 'continuous',
-	//		        seriesIndex: 0,
-	//		        text: ['scatter3D'],
-	//		        textStyle: {
-	//		            color: '#fff'
-	//		        },
-	//		        calculable: true,
-	//		        max: 3000,
-	//		        inRange: {
-	//		            color: ['#87aa66', '#eba438', '#d94d4c']
-	//		        }
-	//		    }],
 			    globe: {
-	//		        baseTexture: mapChart,
-	//			    environment:'none',//背景
+				    environment:'none',//背景
 					environment:'img/charity_top.png',
  					heightTexture: 'img/bathymetry_bw_composite_4k-back.jpg',
 					baseTexture: 'img/8.png',
@@ -248,7 +180,7 @@
 			                color: 'blue', // 光照颜色
 			                intensity: 14.2, // 光照强度
 			                shadowQuality: 'ultra', //阴影亮度
-			                shadow: true, // 是否显示阴影
+			                shadow: false, // 是否显示阴影
 			                alpha: 40,
 			                beta: -30
 			            },
@@ -300,23 +232,6 @@
 			            opacity: 0.2
 			        },
 			        data: [],
-	//		        data: [{
-	//		            from: 'A',
-	//		            to: 'B',
-	//		            coords: [
-	//		                [-83.69501541554166, -75.76453333240994],
-	//						[105.18, 37.51]
-	//		            ],
-	//		            value:"2013.48"
-	//		        }, {
-	//		            from: 'A',
-	//		            to: 'C',
-	//		            coords: [
-	//		                [118.377173, 31.337123],
-	//		                [105.18, 37.51]
-	//		            ],
-	//		            value:"2013.48"
-	//		        }],
 			        silent: false
 			    },{ //点
 			        name: '景区',
@@ -336,36 +251,11 @@
 			        },
 		            
 	//		        showEffectOn: 'hover',
-			        hoverAnimation: true,
+			        hoverAnimation: false,
 			        label: {
 			            normal: {
-			                show: true,
-			                position: 'right',
-//			                formatter: '{b}',
-							formatter:function(params){
-								if(params.dataIndex == 1){
-									return '南京'
-								}else if(params.dataIndex == 2){
-									return '沈阳'
-								}else if(params.dataIndex == 3){
-									return '太原'
-								}else if(params.dataIndex == 4){
-									return '日本'
-								}else if(params.dataIndex == 5){
-									return '雅加达'
-								}else if(params.dataIndex == 0){
-									return '徐州'
-								}else if(params.dataIndex == 6){
-									return '昆明'
-								}
-							},
-			                textStyle: {
-			                    fontSize: 18,
-			                    color: '#f5d909',
-			                    fontWeight:'bold',
-//			                    backgroundColor:'rgba(255,255,255,0.2)'
-								backgroundColor:'transparent'
-			                }
+			                show: false,
+//			                
 			            }
 			        },
 			        itemStyle: {
@@ -373,16 +263,6 @@
 			                color: 'rgb(29,183,255)'
 			            }
 			        },
-	//		        data: [{
-	//		            'name': 'A',
-	//		            'value': [105.18, 37.51, 1500]
-	//		        }, {
-	//		            'name': 'B',
-	//		            'value': [118.393252, 31.15576, 1500]
-	//		        }, {
-	//		            'name': 'C',
-	//		            'value': [117.989662, 31.293115, 1500]
-	//		        }]
 					data:[
 						[117.11, 34.15],
 						[118.58, 32.01],
